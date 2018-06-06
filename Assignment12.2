@@ -1,0 +1,59 @@
+
+
+# Session 12: Assignment 2
+
+In this assignment students have to make ARIMA model over shampoo sales data and
+check the MSE between predicted and actual value.
+Student can download data in .csv format from the following link:
+https://datamarket.com/data/set/22r0/sales-of-shampoo-over-a-three-year-period#!ds
+=22r0&display=line
+Hint:
+Following is the command import packages and data
+from pandas import read_csv
+from pandas import datetime
+from matplotlib import pyplot
+from statsmodels.tsa.arima_model import ARIMA
+from sklearn.metrics import mean_squared_error
+def parser(x):
+return datetime.strptime('190'+x, '%Y-%m')
+series = read_csv('shampoo-sales.csv', header=0, parse_dates=[0], index_col=0,
+squeeze=True, date_parser=parser)
+
+
+from pandas import read_csv
+from pandas import datetime
+from matplotlib import pyplot
+from statsmodels.tsa.arima_model import ARIMA
+from sklearn.metrics import mean_squared_error
+from math import sqrt
+
+def parser(x):
+    return datetime.strptime('190'+x, '%Y-%m')
+    
+# dataset downloaded from link
+#  https://datamarket.com/data/set/22r0/sales-of-shampoo-over-a-three-year-period#!ds=22r0&display=line
+series = read_csv('sales-of-shampoo-over-a-three-ye.csv', header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser)
+print(series.head())
+series.plot()
+pyplot.show()
+
+X = series.values
+train_data, test_data = X[0:-12], X[-12:]
+history = [x for x in train_data]
+predictions = list()
+
+for t in range(len(test_data)):
+    model = ARIMA(history, order=(4,1,0))
+    model_fit = model.fit()
+    
+    frst = model_fit.forecast()[0]
+    
+    predictions.append(frst)
+    history.append(test_data[t])
+
+rmse = sqrt(mean_squared_error(test_data, predictions))
+print('test_data RMSE: %.3f' % rmse)
+
+pyplot.plot(test_data)
+pyplot.plot(predictions, color='red')
+pyplot.show()
